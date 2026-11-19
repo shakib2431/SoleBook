@@ -2,7 +2,6 @@ package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,16 +17,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.domain.BusinessCategory
 import com.example.domain.BusinessChannel
 import com.example.domain.BusinessOperationMode
@@ -51,7 +45,8 @@ fun OnboardingScreen(
         currencySymbol: String,
         businessChannel: String
     ) -> Unit,
-    onSelectOperationMode: (String) -> Unit = {}
+    onSelectOperationMode: (String) -> Unit = {},
+    onRestoreBackupClick: (() -> Unit)? = null
 ) {
     var step by rememberSaveable { mutableIntStateOf(0) }
     var businessName by rememberSaveable { mutableStateOf("") }
@@ -64,6 +59,16 @@ fun OnboardingScreen(
 
     BackHandler(enabled = step > 0) {
         step = (step - 1).coerceAtLeast(0)
+    }
+
+    if (step == 0) {
+        WelcomeOnboardingStep(
+            onGetStarted = { step = 1 },
+            onRestoreBackupClick = onRestoreBackupClick,
+            activePageIndex = 0,
+            totalPages = 3
+        )
+        return
     }
 
     Surface(
@@ -92,9 +97,6 @@ fun OnboardingScreen(
                 }
 
                 when (step) {
-                    0 -> WelcomeStep(
-                        onGetStarted = { step = 1 }
-                    )
                     1 -> BusinessInfoStep(
                         businessName = businessName,
                         businessNameError = businessNameError,
@@ -209,157 +211,6 @@ private fun OnboardingProgressHeader(
             color = EmeraldPrimary,
             trackColor = DividerGrey
         )
-    }
-}
-
-@Composable
-private fun WelcomeStep(
-    onGetStarted: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
-        ) {
-            // Brand wordmark
-            Surface(
-                color = EmeraldSoft,
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(
-                    text = "SOLEBOOK",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.6.sp,
-                    color = EmeraldPrimary,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                )
-            }
-
-            // Clean, restrained geometric retail illustration
-            Surface(
-                color = SurfaceWhite,
-                shape = RoundedCornerShape(24.dp),
-                border = BorderStroke(1.dp, DividerGrey),
-                modifier = Modifier.size(196.dp)
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
-                ) {
-                    val w = size.width
-                    val h = size.height
-
-                    // Soft tinted backdrop panel
-                    drawRoundRect(
-                        color = EmeraldSoft,
-                        topLeft = Offset(0f, h * 0.08f),
-                        size = Size(w, h * 0.72f),
-                        cornerRadius = CornerRadius(24f, 24f)
-                    )
-
-                    // Receipt / Ledger Sheet
-                    drawRoundRect(
-                        color = Color.White,
-                        topLeft = Offset(w * 0.16f, h * 0.16f),
-                        size = Size(w * 0.68f, h * 0.72f),
-                        cornerRadius = CornerRadius(18f, 18f)
-                    )
-
-                    // Ledger header bar
-                    drawRoundRect(
-                        color = EmeraldPrimary,
-                        topLeft = Offset(w * 0.25f, h * 0.26f),
-                        size = Size(w * 0.34f, h * 0.07f),
-                        cornerRadius = CornerRadius(6f, 6f)
-                    )
-
-                    // Three tidy ledger lines
-                    drawRoundRect(
-                        color = DividerGrey,
-                        topLeft = Offset(w * 0.25f, h * 0.42f),
-                        size = Size(w * 0.50f, h * 0.055f),
-                        cornerRadius = CornerRadius(5f, 5f)
-                    )
-                    drawRoundRect(
-                        color = DividerGrey,
-                        topLeft = Offset(w * 0.25f, h * 0.53f),
-                        size = Size(w * 0.40f, h * 0.055f),
-                        cornerRadius = CornerRadius(5f, 5f)
-                    )
-
-                    // Ascending financial bars
-                    val barW = w * 0.10f
-                    drawRoundRect(
-                        color = EmeraldPrimary.copy(alpha = 0.30f),
-                        topLeft = Offset(w * 0.25f, h * 0.70f),
-                        size = Size(barW, h * 0.11f),
-                        cornerRadius = CornerRadius(4f, 4f)
-                    )
-                    drawRoundRect(
-                        color = EmeraldPrimary.copy(alpha = 0.60f),
-                        topLeft = Offset(w * 0.40f, h * 0.65f),
-                        size = Size(barW, h * 0.16f),
-                        cornerRadius = CornerRadius(4f, 4f)
-                    )
-                    drawRoundRect(
-                        color = EmeraldPrimary,
-                        topLeft = Offset(w * 0.55f, h * 0.60f),
-                        size = Size(barW, h * 0.21f),
-                        cornerRadius = CornerRadius(4f, 4f)
-                    )
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(
-                    text = "Your business.\nSimpler than ever.",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = TextCharcoal,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "Manage stock, sales and money — all in one place.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextSecondaryGrey,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-        Spacer(Modifier.height(12.dp))
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            PrimaryButton(
-                text = "Set up my business",
-                onClick = onGetStarted,
-                modifier = Modifier.fillMaxWidth(),
-                testTag = "onboarding_start_btn"
-            )
-            Text(
-                text = "Takes less than a minute. Works completely offline.",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextMutedGrey,
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 

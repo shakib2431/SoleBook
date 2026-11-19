@@ -14,6 +14,17 @@ val WholesaleBlueDark = Color(0xFF1E3A8A)     // Deep navy-cobalt ink / pressed 
 val WholesaleBlueLight = Color(0xFF2563EB)    // Subtle cobalt blue highlight
 val WholesaleBlueSoft = Color(0xFFEFF6FF)     // Clean ice-blue container pill
 
+// Welcome Onboarding Screen Tokens (Pure White + Layered Emerald Waves)
+val WelcomeWaveDeep = Color(0xFF0E764B)
+val WelcomeWaveMid = Color(0xFF34A86E)
+val WelcomeWaveSoft = Color(0xFFDDF4E7)
+val WelcomeHeadlineDark = Color(0xFF0A4A30)
+val WelcomeHeadlineEmerald = Color(0xFF137C4D)
+val WelcomeCtaStart = Color(0xFF1A8F56)
+val WelcomeCtaEnd = Color(0xFF0A5C38)
+val WelcomeArcMint = Color(0xFFB3E3C9)
+val WelcomeDotInactive = Color(0xFFC4EAD6)
+
 val CanvasWarmWhite = Color(0xFFFAF9F6)       // Warm off-white primary canvas
 val SurfaceWhite = Color(0xFFFFFFFF)          // Crisp clean white card surface
 val SurfaceSubtle = Color(0xFFF3F1EC)         // Restrained warm stone surface variant

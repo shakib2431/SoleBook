@@ -9,10 +9,12 @@ import com.example.data.repository.CartLineRequest
 import com.example.data.repository.SoleBookRepository
 import android.graphics.Bitmap
 import android.graphics.Color
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import com.example.data.local.ProductFingerprintEntity
 import com.example.domain.OfflineVisualMatcher
 import com.example.ui.components.CameraCaptureDialog
@@ -707,8 +709,10 @@ class ExampleRobolectricTest {
         }
         composeTestRule.waitForIdle()
 
-        // Screen 1 — Welcome
-        composeTestRule.onNodeWithText("SOLEBOOK").assertIsDisplayed()
+        // Screen 1 — Redesigned Welcome Screen
+        composeTestRule.onNodeWithText("SoleBook").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Your Business,").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Simpler than Ever.").assertIsDisplayed()
         composeTestRule.onNodeWithTag("onboarding_start_btn").performClick()
         composeTestRule.waitForIdle()
 
@@ -737,6 +741,73 @@ class ExampleRobolectricTest {
         composeTestRule.waitForIdle()
 
         assertEquals(listOf("Sharma Kirana & Co", "GROCERY", "", "₹", "BOTH"), capturedResult)
+    }
+
+    @Test
+    @Config(sdk = [36], qualifiers = "w360dp-h640dp")
+    fun `redesigned welcome screen renders cleanly on narrow phone screen and triggers actions`() {
+        var startClicked = false
+        var restoreClicked = false
+
+        composeTestRule.setContent {
+            SoleBookTheme {
+                com.example.ui.screens.WelcomeOnboardingStep(
+                    onGetStarted = { startClicked = true },
+                    onRestoreBackupClick = { restoreClicked = true }
+                )
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("welcome_brand_header").assertIsDisplayed()
+        composeTestRule.onNodeWithText("SoleBook").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("welcome_storefront_illustration").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Inventory").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sell & Bill").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Purchases").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Customers").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Reports").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Your Business,").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Simpler than Ever.").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Manage inventory, sales, purchases, customers and money — all in one place.").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("welcome_pagination_dots").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("onboarding_start_btn").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("onboarding_restore_backup_btn").assertIsDisplayed().performClick()
+        composeTestRule.waitForIdle()
+
+        assertTrue(startClicked)
+        assertTrue(restoreClicked)
+    }
+
+    @Test
+    @Config(sdk = [36], qualifiers = "w840dp-h1024dp")
+    fun `redesigned welcome screen renders cleanly on large tablet screen without clipping`() {
+        var startClicked = false
+
+        composeTestRule.setContent {
+            SoleBookTheme {
+                com.example.ui.screens.WelcomeOnboardingStep(
+                    onGetStarted = { startClicked = true },
+                    onRestoreBackupClick = {}
+                )
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("SoleBook").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("welcome_storefront_illustration").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Inventory").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sell & Bill").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Purchases").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Customers").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Reports").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Your Business,").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Simpler than Ever.").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("welcome_pagination_dots").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("onboarding_start_btn").assertIsDisplayed().performClick()
+        composeTestRule.waitForIdle()
+
+        assertTrue(startClicked)
     }
 
     @Test

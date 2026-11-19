@@ -3,8 +3,10 @@ package com.example
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -150,6 +152,10 @@ fun SoleBookRootApp(
             LoadingState()
         }
         !state.settings.hasCompletedOnboarding -> {
+            val onboardingRestoreLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument(),
+                onResult = { uri -> uri?.let { viewModel.restoreJsonFromUri(it) } }
+            )
             OnboardingScreen(
                 onCompleteGoDashboard = { name, cat, customType, curr, ch ->
                     viewModel.completeOnboarding(name, cat, customType, curr, ch, pendingOperationMode)
@@ -160,6 +166,9 @@ fun SoleBookRootApp(
                 },
                 onSelectOperationMode = { opMode ->
                     pendingOperationMode = opMode
+                },
+                onRestoreBackupClick = {
+                    onboardingRestoreLauncher.launch(arrayOf("application/json", "*/*"))
                 }
             )
         }
